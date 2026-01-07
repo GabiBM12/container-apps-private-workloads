@@ -1,0 +1,7 @@
+location         = "westeurope"
+workload_rg_name = "rg-gb-dev-workloads"
+
+repo2_state_resource_group_name  = "YOUR_TFSTATE_RG"
+repo2_state_storage_account_name = "YOUR_TFSTATE_STORAGE"
+repo2_state_container_name       = "YOUR_TFSTATE_CONTAINER"
+repo2_state_key                  = "repo2/dev.tfstate"
