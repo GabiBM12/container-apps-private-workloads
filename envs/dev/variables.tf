@@ -35,3 +35,12 @@ variable "container_app_environment_name" {
   type        = string
   description = "Container Apps Environment name."
 }
+
+variable "name_prefix" {
+  type = string
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
