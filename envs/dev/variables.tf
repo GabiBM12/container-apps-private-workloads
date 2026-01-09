@@ -25,3 +25,13 @@ variable "repo2_state_key" {
   description = "Key (file name) where repo #2 tfstate is stored"
   type        = string
 }
+
+variable "log_analytics_workspace_name" {
+  type        = string
+  description = "Log Analytics workspace name for Container Apps logging."
+}
+
+variable "container_app_environment_name" {
+  type        = string
+  description = "Container Apps Environment name."
+}

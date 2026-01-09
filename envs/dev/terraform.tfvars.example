@@ -1,5 +1,7 @@
 location         = "westeurope"
 workload_rg_name = "rg-gb-dev-workloads"
+log_analytics_workspace_name     = "law-gb-dev-aca"
+container_app_environment_name   = "cae-gb-dev"
 
 repo2_state_resource_group_name  = "YOUR_TFSTATE_RG"
 repo2_state_storage_account_name = "YOUR_TFSTATE_STORAGE"

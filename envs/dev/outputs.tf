@@ -15,6 +15,21 @@ output "platform_private_dns_zone_ids" {
   value = data.terraform_remote_state.platform.outputs.private_dns_zone_ids
 }
 
-output "snet_container_apps_id" {
-  value = local.snet_container_apps_id
+output "snet_aca_id" {
+  value = local.snet_aca_env_id
+}
+output "log_analytics_workspace_id" {
+  value = azurerm_log_analytics_workspace.aca.id
+}
+
+output "container_app_environment_id" {
+  value = azurerm_container_app_environment.this.id
+}
+
+output "container_app_environment_default_domain" {
+  value = azurerm_container_app_environment.this.default_domain
+}
+
+output "container_app_environment_static_ip" {
+  value = azurerm_container_app_environment.this.static_ip_address
 }
