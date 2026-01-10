@@ -37,6 +37,14 @@ resource "azurerm_container_app" "hello" {
   }
 
   tags = var.tags
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.app.id]
+  }
+  registry {
+    server   = local.acr_login_server
+    identity = azurerm_user_assigned_identity.app.id
+  }
 }
 
  
