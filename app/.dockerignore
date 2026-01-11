@@ -1,6 +1,59 @@
-.venv
-__pycache__
+# =========================
+# Python
+# =========================
+__pycache__/
 *.pyc
-.DS_Store
-.git
+*.pyo
+*.pyd
+*.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# =========================
+# Git
+# =========================
+.git/
+.gitignore
+
+# =========================
+# Terraform (infra must never be in images)
+# =========================
+.terraform/
+*.tf
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+terraform.tfvars
+terraform.tfvars.json
+
+# =========================
+# Environment / secrets
+# =========================
 .env
+.env.*
+*.secret
+*.key
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Logs & temp files
+# =========================
+*.log
+tmp/
+temp/
+
+# =========================
+# Docs & misc (not needed at runtime)
+# =========================
+docs/
+README.md

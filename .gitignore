@@ -1,8 +1,26 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pytest_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# =========================
+# Terraform
+# =========================
 .terraform/
 *.tfstate
 *.tfstate.*
-crash.log
-crash.*.log
 *.tfvars
 *.tfvars.json
 override.tf
@@ -10,9 +28,54 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .terraform.lock.hcl
+
+# =========================
+# Environment / secrets
+# =========================
+.env
+.env.*
+*.secret
+*.key
+*.pem
+*.crt
+
+# =========================
+# Docker
+# =========================
+*.tar
+docker-compose.override.yml
+
+# =========================
+# Logs & runtime files
+# =========================
+*.log
+logs/
+tmp/
+temp/
+
+# =========================
+# OS / Editor
+# =========================
 .DS_Store
-.venv
-__pycache__
-*.pyc
-venv/
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Node / misc (defensive)
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# Coverage / reports
+# =========================
+.coverage
+htmlcov/
+
+# =========================
+# Local tooling
+# =========================
+terraform.tfplan
