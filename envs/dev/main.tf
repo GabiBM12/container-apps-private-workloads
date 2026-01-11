@@ -19,6 +19,7 @@ locals {
   acr_login_server              = data.terraform_remote_state.platform.outputs.acr_login_server
   keyvault_id                   = data.terraform_remote_state.platform.outputs.keyvault_id
   storage_account_id            = data.terraform_remote_state.platform.outputs.storage_account_id
+  storage_account_name          = data.terraform_remote_state.platform.outputs.storage_account_name
 
   # The names must match the subnet keys you output in repo #2
   snet_aca_env_id          = local.platform_subnet_ids["snet-aca-env"]
