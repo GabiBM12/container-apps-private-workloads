@@ -31,6 +31,7 @@ jobs:
 
       - name: Set vars
         run: |
+          echo "ACR_NAME=${{ vars.ACR_NAME }}" >> $GITHUB_ENV
           echo "ACR_LOGIN_SERVER=${{ vars.ACR_LOGIN_SERVER }}" >> $GITHUB_ENV
           echo "RG=${{ vars.WORKLOAD_RG }}" >> $GITHUB_ENV
           echo "CA_NAME=${{ vars.CA_NAME }}" >> $GITHUB_ENV
