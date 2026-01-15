@@ -33,3 +33,10 @@ output "container_app_environment_default_domain" {
 output "container_app_environment_static_ip" {
   value = azurerm_container_app_environment.this.static_ip_address
 }
+output "gha_client_id" {
+  value = azurerm_user_assigned_identity.gha.client_id
+}
+
+output "gha_identity_id" {
+  value = azurerm_user_assigned_identity.gha.id
+}
