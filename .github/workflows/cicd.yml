@@ -55,33 +55,34 @@ jobs:
             --push \
             ./app
 
-  - name: Deploy to Azure Container App
-    shell: bash
-    run: |
-      set -euo pipefail
+      - name: Deploy to Azure Container App
+        run: |
+         shell: bash
+        run: |
+         set -euo pipefail
 
-      echo "RG='${RG-}'"
-      echo "CA_NAME='${CA_NAME-}'"
-      echo "CONTAINER_NAME='${CONTAINER_NAME-}'"
-      echo "IMAGE='${IMAGE-}'"
-      echo "TAG='${TAG-}'"
+         echo "RG='${RG-}'"
+         echo "CA_NAME='${CA_NAME-}'"
+         echo "CONTAINER_NAME='${CONTAINER_NAME-}'"
+         echo "IMAGE='${IMAGE-}'"
+         echo "TAG='${TAG-}'"
 
-      # fail fast if anything required is missing
-      : "${RG:?RG is missing}"
-      : "${CA_NAME:?CA_NAME is missing}"
-      : "${IMAGE:?IMAGE is missing}"
-      : "${TAG:?TAG is missing}"
+    # fail fast if anything required is missing
+    : "${RG:?RG is missing}"
+    : "${CA_NAME:?CA_NAME is missing}"
+    : "${IMAGE:?IMAGE is missing}"
+    : "${TAG:?TAG is missing}"
 
-      az version
-      az config set extension.use_dynamic_install=yes_without_prompt
-      az containerapp update \
-        --resource-group "${RG}" \
-        --name "${CA_NAME}" \
-        --container-name "${CONTAINER_NAME}" \
-        --image "${IMAGE}:${TAG}"
+         az version
+          az config set extension.use_dynamic_install=yes_without_prompt
+         az containerapp update \
+            --resource-group "${RG}" \
+            --name "${CA_NAME}" \
+            --container-name "${CONTAINER_NAME}" \
+            --image "${IMAGE}:${TAG}"
 
-  - name: Smoke test /health
-    run: |
-      FQDN=$(az containerapp show -g ${RG} -n ${CA_NAME} --query properties.configuration.ingress.fqdn -o tsv)
-      echo "FQDN=${FQDN}"
-      curl -i --max-time 20 "https://${FQDN}/health"
+      - name: Smoke test /health
+        run: |
+          FQDN=$(az containerapp show -g ${RG} -n ${CA_NAME} --query properties.configuration.ingress.fqdn -o tsv)
+          echo "FQDN=${FQDN}"
+          curl -i --max-time 20 "https://${FQDN}/health"
