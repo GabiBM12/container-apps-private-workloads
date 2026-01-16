@@ -50,7 +50,7 @@ jobs:
       - name: Build and push (amd64)
         run: |
           docker buildx create --use --name builder || docker buildx use builder
-          IMAGE="${{ vars.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}"
+          IMAGE="${{ vars.ACR_LOGIN_SERVER }}/${IMAGE_NAME }"
           TAG="sha-${GITHUB_SHA::7}"
 
           echo "IMAGE=${IMAGE}"
