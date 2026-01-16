@@ -58,7 +58,7 @@ jobs:
       - name: Deploy to Azure Container App
         run: |
          shell: bash
-        run: |
+         run: |
          set -euo pipefail
 
          echo "RG='${RG-}'"
@@ -67,11 +67,7 @@ jobs:
          echo "IMAGE='${IMAGE-}'"
          echo "TAG='${TAG-}'"
 
-    # fail fast if anything required is missing
-    : "${RG:?RG is missing}"
-    : "${CA_NAME:?CA_NAME is missing}"
-    : "${IMAGE:?IMAGE is missing}"
-    : "${TAG:?TAG is missing}"
+   
 
          az version
           az config set extension.use_dynamic_install=yes_without_prompt
