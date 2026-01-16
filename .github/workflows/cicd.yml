@@ -33,7 +33,7 @@ jobs:
           echo "ACR_LOGIN_SERVER=${{ vars.ACR_LOGIN_SERVER }}" >> $GITHUB_ENV
           echo "RG=${{ vars.WORKLOAD_RG }}" >> $GITHUB_ENV
           echo "CA_NAME=${{ vars.CA_NAME }}" >> $GITHUB_ENV
-          echo "IMAGE=${{ vars.ACR_LOGIN_SERVER }}/crm-api" >> $GITHUB_ENV
+          echo "IMAGE=${{ vars.IMAGE_NAME }}" >> $GITHUB_ENV
           echo "TAG=sha-${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: ACR login
@@ -59,7 +59,7 @@ jobs:
           az containerapp update \
             -g ${RG} \
             -n ${CA_NAME} \
-            --image ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${TAG}
+            --image ${IMAGE}:${TAG}
 
       - name: Smoke test /health
         run: |
