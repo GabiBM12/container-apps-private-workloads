@@ -56,25 +56,15 @@ jobs:
             ./app
 
       - name: Deploy to Azure Container App
-        shell: bash 
-        run: |
-         set -euo pipefail
-
-         echo "RG='${RG-}'"
-         echo "CA_NAME='${CA_NAME-}'"
-         echo "CONTAINER_NAME='${CONTAINER_NAME-}'"
-         echo "IMAGE='${IMAGE-}'"
-         echo "TAG='${TAG-}'"
-
-   
-
-         az version
-          az config set extension.use_dynamic_install=yes_without_prompt
-         az containerapp update \
-            --resource-group "${RG}" \
-            --name "${CA_NAME}" \
-            --container-name "${CONTAINER_NAME}" \
-            --image "${IMAGE}:${TAG}"
+        uses: azure/cli@v2
+        with: 
+         inlineScript: |
+           az extension add --name containerapp --upgrade --allow-preview
+           az containerapp update \
+           --resource-group "${RG}" \
+             --name "${CA_NAME}" \
+             --container-name "${CONTAINER_NAME}" \
+             --image "${IMAGE}:${TAG}"
 
       - name: Smoke test /health
         run: |
