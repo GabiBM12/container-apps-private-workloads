@@ -57,9 +57,9 @@ jobs:
       - name: Deploy to Azure Container App
         run: |
           az containerapp update \
-            --resource-group "$RG" \
-            --name "$CA_NAME" \
-            --image "$IMAGE:$TAG"
+            --resource-group "${RG}" \
+            --name "${CA_NAME}" \
+            --image "${IMAGE}:${TAG}"
 
       - name: Smoke test /health
         run: |
