@@ -58,8 +58,8 @@ jobs:
 
           docker buildx build \
             --platform linux/amd64 \
-            -t ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${TAG} \
-            -t ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:latest \
+            -t "${IMAGE}:${TAG}" \
+            -t "${IMAGE}:latest" \
             --push \
             ./app
 
