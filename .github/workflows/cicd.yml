@@ -41,9 +41,21 @@ jobs:
         run: |
           az acr login --name ${{ vars.ACR_NAME }}
 
+      - name: Debug vars
+        run: |
+         echo "ACR_LOGIN_SERVER='${{ vars.ACR_LOGIN_SERVER }}'"
+         echo "IMAGE_NAME='${{ env.IMAGE_NAME }}'"
+         echo "SHA='${GITHUB_SHA}'"    
+
       - name: Build and push (amd64)
         run: |
           docker buildx create --use --name builder || docker buildx use builder
+          IMAGE="${{ vars.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}"
+          TAG="sha-${GITHUB_SHA::7}"
+
+          echo "IMAGE=${IMAGE}"
+          echo "TAG=${TAG}"
+
           docker buildx build \
             --platform linux/amd64 \
             -t ${ACR_LOGIN_SERVER}/${IMAGE_NAME}:${TAG} \
