@@ -44,3 +44,10 @@ variable "tags" {
   type    = map(string)
   default = {}
 }
+
+variable "mailgun_email_api_secret_id" {
+  type        = string
+  description = "keyvault secred id (uri) for Mailgun email API key"
+
+}
+

@@ -15,6 +15,14 @@ CONTACTS: dict[str, Contact] = {}
 def health():
     return {"status": "ok"}
 
+@router.get("/health/mailgun")
+def health_mailgun():
+    # show only presence/length, never the value
+    return {
+        "mailgun_key_present": bool(settings.MAILGUN_EMAIL_API_KEY),
+        "mailgun_key_len": len(settings.MAILGUN_EMAIL_API_KEY),
+    }
+
 
 @router.post("/contacts", response_model=Contact)
 def create_contact(payload: ContactCreate):
