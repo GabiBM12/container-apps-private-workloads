@@ -1,89 +1,221 @@
-# Repo #3 – Container Apps Workloads (Azure)
+# Repo #3 – Azure Container Apps Workloads (CRM API)
 
-This repository deploys workload resources on top of the secure networking foundation created in Repo #2.
+This repository deploys and operates application workloads on top of a secure Azure platform foundation built in **Repo #2**.
 
-## Milestone 1
-- Uses a dedicated remote backend state (separate key)
-- Reads platform outputs from Repo #2 via `terraform_remote_state`
-- Creates a dedicated Resource Group for workloads
-- Exposes platform IDs (subnets / DNS zones) as outputs for later milestones
+It demonstrates how a real-world containerised application is:
+- Built
+- Deployed
+- Secured
+- Integrated with external services
+- Operated via CI/CD
 
-## How it connects to Repo #2
-Repo #2 owns the VNet, subnets, Private DNS, and guardrails.  
-Repo #3 consumes those outputs and deploys workload services (Container Apps, identities, etc.) into the platform network.
+using **Azure-native identity, networking, and security patterns**.
 
-
-## Milestone 2 – Application Deployment & Identity-Based Access
-
-In this milestone, the initial test "hello" Container App was removed and replaced with a dedicated Azure Container App configured specifically for the CRM workload.
-
-The following was implemented:
-
-- Built a production-ready Docker image for the CRM API
-- Pushed the image to Azure Container Registry (ACR)
-- Deployed a new Azure Container App aligned with the application configuration
-- Enabled system-assigned managed identity on the Container App
-- Assigned required RBAC roles:
-  - **AcrPull** on Azure Container Registry (image pull at runtime)
-  - **Storage Blob Data Contributor** on the Storage Account (application data access)
-- Connected the application to Azure Blob Storage using **managed identity authentication**
-- Verified end-to-end functionality via public FQDN using `curl` (health checks and API operations)
-
-At no point were secrets, storage keys, or registry credentials stored in code, Terraform state, or environment files.  
-All access is handled via Azure AD identities and role-based access control.
+This repo intentionally avoids shortcuts (hardcoded secrets, shared credentials, manual portal configuration) and instead reflects how modern cloud workloads are deployed in production environments.
 
 ---
 
-## Container Image & Registry Flow
+## Repository Scope
 
-The application image is built locally using Docker and pushed to ACR using explicit version tags (e.g. `0.1.0`) as well as a moving `latest` tag.
+**Repo #3 owns the workload layer**, not the underlying platform.
 
-The Container App pulls images from ACR using its managed identity, eliminating the need for admin credentials or registry secrets.
+It is responsible for:
+- Application infrastructure (Azure Container Apps)
+- Workload identities and RBAC
+- CI/CD pipelines
+- Runtime configuration and secrets
+- External service integration
+- Application-level verification and debugging
 
-This mirrors real-world CI/CD pipelines where image build and push are automated, and runtime workloads authenticate using Azure-native identity.
+All shared infrastructure (VNet, subnets, Private DNS, guardrails) is owned by **Repo #2** and consumed here via Terraform remote state.
 
 ---
 
-## Application Verification
+## Architecture Overview
 
-The deployed application exposes a public HTTPS endpoint via Azure Container Apps.
+- Containerised **CRM API** (FastAPI, Python)
+- Deployed to **Azure Container Apps**
+- Images stored in **Azure Container Registry**
+- Secrets stored in **Azure Key Vault**
+- Identity-based access using **Managed Identity**
+- CI/CD implemented with **GitHub Actions + OIDC**
+- External email service integration (Mailgun)
 
-Verified functionality includes:
-- Health endpoint responding with HTTP 200
-- POST and GET operations against the `/contacts` API
-- Successful runtime access to Azure Blob Storage using managed identity
-All validation was performed using direct HTTP calls to the Container App FQDN.
+📄 **Detailed architecture:**  
+➡️ [`docs/architecture.md`](docs/architecture.md)
 
-## Why This Project Exists
+📄 **Security model & threat considerations:**  
+➡️ [`docs/security.md`](docs/security.md)
 
-This repository represents my transition from learning Azure concepts in isolation to operating a real cloud workload end-to-end.
+---
 
-Rather than following a single tutorial, I intentionally built and connected multiple Azure services:
-- Azure Container Apps
-- Azure Container Registry
-- Azure Storage Accounts
-- Azure RBAC and Managed Identities
-- Terraform remote state and cross-repository dependencies
+## Milestone 1 – Workload State & Platform Integration
 
-Along the way, I encountered configuration mistakes, deployment failures, and identity-related issues — and treated each one as a debugging exercise rather than a blocker.
+### What was implemented
 
-By the end of this milestone, I was able to:
-- Diagnose misaligned Container App configurations
-- Understand the difference between infrastructure identity and application runtime identity
-- Correct RBAC scoping issues
-- Verify application behavior directly via logs and HTTP responses
-This project reflects how I learn: by building, breaking, fixing, and documenting real systems.
+- Dedicated Terraform **remote backend state** (separate key from Repo #2)
+- `terraform_remote_state` used to consume platform outputs:
+  - VNet and subnet IDs
+  - Private DNS zone IDs
+  - Shared platform resource IDs
+- Dedicated **Resource Group** for workloads
+- Clear separation between:
+  - Platform ownership (Repo #2)
+  - Application ownership (Repo #3)
 
-## Lessons Learned
-An early version of this deployment reused a test Container App configuration, which led to image pull and routing issues when the application was accessed via its FQDN.
+### Why this matters
 
-By reviewing:
-- Container App configuration
-- Image source and identity bindings
-- Application logs in Log Analytics
+This mirrors how real organisations split responsibilities between:
+- Platform / Cloud Enablement teams
+- Application / Product teams
 
-I identified a mismatch between the test Container App and the intended workload configuration.
+---
 
-The issue was resolved by deploying a clean, application-specific Container App with the correct identity, image, and runtime settings.
+## Milestone 2 – Container App Deployment & Identity-Based Access
 
-This reinforced the importance of environment parity and avoiding configuration drift between test and production workloads.
+The initial test Container App was removed and replaced with a **dedicated CRM workload**.
+
+### Implemented
+
+- Docker image for the CRM API
+- Image pushed to **Azure Container Registry**
+- Azure Container App deployed with:
+  - Application-specific configuration
+  - Explicit CPU / memory limits
+  - External HTTPS ingress
+- **User-assigned managed identity** attached to the Container App
+- RBAC assignments:
+  - **AcrPull** → image pull at runtime
+  - **Storage Blob Data Contributor** → application data access
+- Azure Blob Storage accessed **without keys**, using managed identity only
+- End-to-end verification via public FQDN (`curl`)
+
+🔐 At no point were secrets, storage keys, or registry credentials stored in:
+- Source code
+- Terraform state
+- GitHub
+- Environment files
+
+All access is handled via **Azure AD + RBAC**.
+
+---
+
+## Milestone 3 – CI/CD with GitHub Actions (OIDC)
+
+A two-stage CI/CD pipeline was implemented using **GitHub Actions** and **OIDC-based authentication**.
+
+### CI Stage
+- Triggered on:
+  - Pull requests
+  - Feature branch pushes
+- Builds the container image locally
+- Does **not** push images
+- Safe for untrusted branches
+
+### CD Stage
+- Triggered only on:
+  - Merge into `main`
+  - Manual dispatch
+- Protected by **GitHub Environments**
+- Requires explicit approval before deployment
+- Uses **federated credentials (OIDC)**:
+  - No stored Azure secrets
+  - No long-lived service principals
+
+### Outcome
+- Image is built and pushed to ACR
+- Container App is updated to the new image
+- Deployment is auditable, gated, and repeatable
+
+---
+
+## Milestone 4 – Key Vault & External Service Integration (Mailgun)
+
+To demonstrate secure external service integration, the application was extended with **Mailgun email support**.
+
+### Implementation Details
+
+- Mailgun API key stored in **Azure Key Vault**
+- Key Vault access restricted to private network + trusted identity
+- Container App configured with:
+  - **Key Vault secret reference**
+  - Secret injected as an environment variable at runtime
+- No secrets stored in Terraform state or CI/CD
+
+### Application Verification
+
+A dedicated health endpoint was added:
+
+GET /health/mailgun
+
+This endpoint:
+	•	Confirms the secret is present at runtime
+	•	Returns only presence and length (never the value)
+	•	Used to verify Key Vault → Container App → Application flow
+
+Logs and HTTP responses were used to validate:
+	•	Identity access
+	•	Secret injection
+	•	Runtime behaviour
+
+
+Application Structure
+
+app/
+  crm_api/
+    main.py        # FastAPI app entrypoint
+    routes.py      # API routes (health, contacts, mailgun check)
+    config.py      # Environment & settings (Pydantic)
+    storage.py     # Azure Blob Storage integration
+    models.py      # API models
+  Dockerfile
+  requirements.txt
+
+The application is intentionally split into small, focused modules, mirroring how larger services are structured in production.
+
+This repo reflects operational troubleshooting, not just successful deployments.
+
+Debugging & Operations
+
+During development, several real issues were encountered and resolved, including:
+	•	Image pull failures due to incorrect identity binding
+	•	Container App configuration drift from test deployments
+	•	Missing runtime environment variables
+	•	Incorrect secret references
+	•	Application startup failures visible only via logs
+
+Each issue was diagnosed using:
+	•	Container App logs
+	•	Azure CLI inspection
+	•	Revision history
+	•	HTTP-based health checks
+
+This repo reflects operational troubleshooting, not just successful deployments.
+
+Why This Project Exists
+
+This repository marks my transition from:
+
+“Learning Azure services”
+to
+“Operating a real cloud workload end-to-end”
+
+Rather than following a single tutorial, I intentionally:
+	•	Built the platform first
+	•	Layered workloads on top
+	•	Integrated CI/CD
+	•	Introduced real security constraints
+	•	Debugged failures in a live environment
+	•	Documented architectural and security decisions
+
+This is how I learn: build → break → fix → understand → document.
+
+Key Azure Services Used
+	•	Azure Container Apps
+	•	Azure Container Registry
+	•	Azure Key Vault
+	•	Azure Storage Accounts
+	•	Azure RBAC & Managed Identities
+	•	Azure Monitor / Logs
+	•	GitHub Actions (OIDC)
+	•	Terraform (remote state, modules, environments)
