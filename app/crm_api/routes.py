@@ -4,6 +4,7 @@ import uuid
 
 from .models import Contact, ContactCreate
 from .storage import upload_image_bytes
+from .config import settings
 
 router = APIRouter()
 
