@@ -14,6 +14,12 @@ resource "azurerm_container_app" "crm" {
     identity = azurerm_user_assigned_identity.app.id
   }
 
+  secret {
+    name                = "mailgun-email-api"
+    key_vault_secret_id = data.azurerm_key_vault_secret.mailgun.id
+    identity            = azurerm_user_assigned_identity.app.id
+  }
+
   ingress {
     external_enabled = true
     target_port      = 8000
@@ -37,6 +43,11 @@ resource "azurerm_container_app" "crm" {
       env {
         name  = "AZURE_STORAGE_CONTAINER_NAME"
         value = "uploads"
+      }
+
+      env {
+        name        = "MAILGUN_EMAIL_API_KEY"
+        secret_name = "mailgun-email-api"
       }
     }
   }

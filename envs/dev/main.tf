@@ -26,6 +26,10 @@ locals {
   snet_workloads_id        = local.platform_subnet_ids["snet-workloads"]
   snet_private_enpoints_id = local.platform_subnet_ids["snet-private-endpoints"]
 }
+data "azurerm_key_vault_secret" "mailgun" {
+  name         = "mailgun-email-api"
+  key_vault_id = local.keyvault_id
+}
 
 resource "azurerm_user_assigned_identity" "app" {
   name                = "${var.name_prefix}-id-crm"
